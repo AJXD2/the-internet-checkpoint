@@ -2,9 +2,6 @@ from flask import Flask, request, redirect, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 import os
 from sqlalchemy.sql import func
-from dotenv import load_dotenv
-
-load_dotenv()
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
