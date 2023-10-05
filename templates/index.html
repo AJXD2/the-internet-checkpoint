@@ -1,16 +1,11 @@
-<head>
-    <title>HomePage</title>
-    <style>
-        body {
-            background: #008080;
-            color: black;
-            font-family: sans-serif;
-        }
-    </style>
-</head>
+{% extends 'base.html' %}
 
-<body>
+
+{% block title %}HomePage{% endblock %}
+
+{% block content %}
+<header class="title">
     <h1>Welcome to the Internet CheckPoint</h1>
-    <p>Please Enter a USERNAME:<input> </p>
-    <p>Made by AJ, and Justus | Started on 10/04/2023</p>
-</body>
+</header>
+
+{% endblock %}
