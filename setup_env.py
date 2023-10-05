@@ -8,7 +8,7 @@ except ImportError:
     print(
         "CANNOT FIND LIBRARIES. INSTALLING NOW USING `current enviroment (too lazy to add this)` PACKAGE MANAGER"
     )
-    os.system("pip install Flask Flask-SQLAlchemy")
+    os.system("pip install Flask Flask-SQLAlchemy python-dotenv")
 print("LIB CHECK DONE!")
 
 # --------------DB--------------
