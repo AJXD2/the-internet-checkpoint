@@ -15,7 +15,8 @@ print("LIB CHECK DONE!")
 from app import db, User, app
 
 print("CREATING DB")
-os.mkdir("instance")
+if not os.path.exists("instance"):
+    os.mkdir("instance")
 # Create DB/Clear previous records
 with app.app_context():
     db.drop_all()

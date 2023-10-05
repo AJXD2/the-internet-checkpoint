@@ -16,11 +16,31 @@
             <a href="/">The internet <span style="color:lime">checkpoint</span></a>
         </div>
         <div class="navbar-links">
-            <a href="/login">Login</a>
+
+            {% if session["logged_in"] %}
             <a href="/logout">Logout</a>
+            {% else %}
+            <a href="/login">Login</a>
+            {% endif %}
+
+
             <a href="/credits">Credits</a>
+
+            {% if logged_in %}
+            <a>Logged in as: {{session["username"]}}</a>
+            {% endif %}
         </div>
+
     </div>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class="flash-messages">
+        {% for message in messages %}
+        <li class="flash-message">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
     <div class="container">
         {% block content %}
 
