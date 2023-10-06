@@ -67,7 +67,15 @@ def index():
         if user:
             username = user.username
 
-    return render_template("index.html", logged_in=logged_in, username=username)
+    messages = Message.query.all()
+
+    return render_template(
+        "index.html",
+        logged_in=logged_in,
+        username=username,
+        messages=messages,
+        trustedusers=trustedusers,
+    )
 
 
 @app.route("/login", methods=["POST", "GET"])
@@ -103,6 +111,7 @@ def register():
             user = User(username=username, password=password)
             db.session.add(user)
             db.session.commit()
+            redirect(url_for("index"))
         except IntegrityError:
             flash("User Exists", "error")
             return redirect(url_for("register"))
@@ -142,9 +151,24 @@ def delete_user(user_id):
 def admin():
     if session.get("username") not in trustedusers:
         return "<h1>Unauthorized</h1> <a href='/'>Home</a>", 401
-    users = User.query.filter(User.username != "admin").all()
+    users = User.query.filter(
+        User.username != "admin", User.username != session.get("username")
+    ).all()
 
     return render_template("admin.html", users=users)
+
+
+@app.route("/post_message", methods=["POST"])
+def post_message():
+    if "user_id" in session:
+        user_id = session["user_id"]
+        message_body = request.form.get("message")
+
+        new_message = Message(body=message_body, user_id=user_id)
+        db.session.add(new_message)
+        db.session.commit()
+
+    return redirect(url_for("index"))
 
 
 if __name__ == "__main__":

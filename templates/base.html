@@ -25,7 +25,7 @@
 
 
             <a href="/credits">Credits</a>
-            {% if session["username"] == "admin" %}
+            {% if session["username"] in trustedusers %}
             <a href="/admin">Admin</a>
             {% endif %}
             {% if logged_in %}

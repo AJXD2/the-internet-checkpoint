@@ -5,9 +5,34 @@
 
 {% block content %}
 <header class="title">
-
-
     <h1>Welcome to the Internet CheckPoint</h1>
 </header>
+
+<div class="wrapper">
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="message {% if message.user_id == session.user_id %}sender{% endif %}">
+            <div class="message-body">{{message.user.username}}: {{ message.body }}</div>
+
+            <div class="message-time">{{ message.created_at }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if logged_in %}
+    <form action="{{ url_for('post_message') }}" method="post" class="message-input">
+        <input type="text" autofocus id="message-body" name="message" placeholder="Type your message..." required />
+        <button type="submit" class="message-submit">Send</button>
+    </form>
+    {% else %}
+    <p class="must-login-message">You must be logged in to send messages.</p>
+    {% endif %}
+</div>
+
+
+
+
+
+
 
 {% endblock %}
