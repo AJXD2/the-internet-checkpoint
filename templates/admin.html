@@ -11,18 +11,40 @@ Admin Page
     {% if users.__len__() > 0 %}
     {% for user in users %}
     <div class="user-container">
-        <p>
-            Username: {{ user.username }}
-            <a href="{{ url_for('delete_user', user_id=user.id) }}" class="delete-button">Delete</a>
-        </p>
+        <div class="user-info">
+            <span>Username: {{ user.username }}</span>
+
+        </div>
+        <a href="{{ url_for('delete_user', user_id=user.id) }}" class="delete-button">Delete</a>
     </div>
     {% endfor %}
     {% else %}
-    <h2 class="user-container" style="text-align: center;">
+    <h2 style="text-align: center; background-color:grey; border-radius: 15px;">
         There are no users
     </h2>
     {% endif %}
-
-
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var toggleButtons = document.querySelectorAll('.toggle-password');
+
+        toggleButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var userId = this.getAttribute('data-id');
+                var passwordElement = document.getElementById('password_' + userId);
+
+                if (passwordElement.type === "password") {
+                    passwordElement.type = "text";
+                    this.innerText = "Hide Password";
+                } else {
+                    passwordElement.type = "password";
+                    this.innerText = "Show Password";
+                }
+            });
+        });
+    });
+
+</script>
+
 {% endblock %}

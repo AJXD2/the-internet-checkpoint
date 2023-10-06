@@ -10,8 +10,13 @@ from flask import (
 )
 from flask_sqlalchemy import SQLAlchemy
 import os
+
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql import func
+import bcrypt
+
+SALT = bcrypt.gensalt(rounds=12)
+
 
 trustedusers = ["admin", "ajxd2", "truthparadox"]
 
@@ -55,6 +60,22 @@ class Message(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
 
+def create_user(username, password):
+    hashed_password = bcrypt.hashpw(password.encode(), SALT)
+    user = User(username=username, password=hashed_password)
+    db.session.add(user)
+    db.session.commit()
+
+
+def login_user(username, password):
+    user = User.query.filter_by(username=username).first()
+
+    if user and bcrypt.checkpw(password.encode(), user.password):
+        return user
+    else:
+        return None
+
+
 @app.route("/")
 def index():
     logged_in = False
@@ -84,9 +105,8 @@ def login():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        user = User.query.filter_by(username=username).first()
-
-        if user and user.password == password:
+        user = login_user(username, password)
+        if user is not None:
             # Set a session variable to indicate the user is logged in
             session["user_id"] = user.id
             session["username"] = user.username
@@ -97,7 +117,7 @@ def login():
             )  # Redirect to a dashboard page or some other page after login
 
         flash("Invalid username or password. Please try again.", "danger")
-
+        return redirect(url_for("login"))
     return render_template("login.html")
 
 
@@ -108,9 +128,7 @@ def register():
             username = request.form.get("username")
             password = request.form.get("password")
             # try:
-            user = User(username=username, password=password)
-            db.session.add(user)
-            db.session.commit()
+            create_user(username, password)
             redirect(url_for("index"))
         except IntegrityError:
             flash("User Exists", "error")
@@ -163,6 +181,16 @@ def post_message():
     if "user_id" in session:
         user_id = session["user_id"]
         message_body = request.form.get("message")
+
+        user = User.query.filter_by(id=user_id).first()
+        if user is None:
+            flash(
+                "You are using an expired account. We logged you out for security pourposes."
+            )
+            return redirect(url_for("logout"))
+        if len(user.messages) > 0 and user.username not in trustedusers:
+            flash("Error: You have reached the max amount of messages.")
+            return redirect(url_for("index"))
 
         new_message = Message(body=message_body, user_id=user_id)
         db.session.add(new_message)
