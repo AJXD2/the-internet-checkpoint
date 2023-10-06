@@ -13,6 +13,7 @@ import os
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql import func
 
+trustedusers = ["admin", "ajxd2", "truthparadox"]
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -33,7 +34,9 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
-
+    messages = db.relationship(
+        "Message", backref="user", lazy=True, cascade="all, delete-orphan"
+    )
     # Establishing the one-to-many relationship with Message
     messages = db.relationship("Message", backref="user", lazy=True)
 
@@ -93,17 +96,16 @@ def login():
 @app.route("/register", methods=["POST", "GET"])
 def register():
     if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        # try:
-        user = User(username=username, password=password)
-        db.session.add(user)
-        db.session.commit()
-        # except IntegrityError:
-        #     flash(
-        #         "An error occoured while making user. Does it exist allready?", "error"
-        #     )
-        #     return redirect(url_for("register"))
+        try:
+            username = request.form.get("username")
+            password = request.form.get("password")
+            # try:
+            user = User(username=username, password=password)
+            db.session.add(user)
+            db.session.commit()
+        except IntegrityError:
+            flash("User Exists", "error")
+            return redirect(url_for("register"))
     return render_template("signup.html")
 
 
@@ -114,6 +116,35 @@ def logout():
     session.pop("logged_in", None)
     session.pop("username", None)
     return redirect(url_for("index"))
+
+
+@app.route("/users/<int:user_id>/delete", methods=["POST", "GET"])
+def delete_user(user_id):
+    if session.get("username") not in trustedusers:
+        return "<h1>Unauthorized</h1> <a href='/'>Home</a>", 401
+
+    user = User.query.get_or_404(user_id)
+
+    if request.method == "POST":
+        # Delete associated messages
+        Message.query.filter_by(user_id=user_id).delete()
+
+        db.session.delete(user)
+        db.session.commit()
+
+        flash("User and associated messages deleted successfully", "success")
+        return redirect(url_for("admin"))
+
+    return render_template("delete_user.html", user=user)
+
+
+@app.route("/admin")
+def admin():
+    if session.get("username") not in trustedusers:
+        return "<h1>Unauthorized</h1> <a href='/'>Home</a>", 401
+    users = User.query.filter(User.username != "admin").all()
+
+    return render_template("admin.html", users=users)
 
 
 if __name__ == "__main__":

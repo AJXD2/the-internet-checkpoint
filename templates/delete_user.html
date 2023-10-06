@@ -1,0 +1,45 @@
+{% extends "adminbase.html" %}
+
+{% block title %}
+Delete User
+{% endblock %}
+
+{% block content %}
+<style>
+    /* delete_user.css */
+
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h2 {
+        color: #dc3545;
+    }
+
+    p {
+        margin: 10px 0;
+    }
+
+    input[type="submit"] {
+        background-color: #dc3545;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #c82333;
+    }
+</style>
+<h2>Delete User</h2>
+<p>Are you sure you want to delete user "{{ user.username }}"?</p>
+
+<form action="{{ url_for('delete_user', user_id=user.id) }}" method="post">
+    <input type="submit" value="Delete">
+</form>
+{% endblock %}
