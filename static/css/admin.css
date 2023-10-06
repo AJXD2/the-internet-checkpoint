@@ -1,19 +1,43 @@
 /* admin.css */
 
-/* ... (existing styles) */
+body {
+    overflow: hidden;
+}
 
 .user-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     background-color: grey;
-    position: relative;
     border-radius: 15px;
     padding: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 5px;
+    width: 100%;
 }
 
-.user-container h2 {
-    color: #007bff;
-    margin-bottom: 10px;
+.user-info {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+.user-info span {
+    margin-right: 10px;
+}
+
+.password {
+    flex-grow: 1;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.toggle-password {
+    padding: 10px 20px;
+    font-size: 14px;
+    
 }
 
 .delete-button {
@@ -25,10 +49,6 @@
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.3s;
-    position: absolute;
-    right: 10px; /* Adjust as needed to position the link at the end */
-    top: 10px; /* Adjust as needed to position the link at the top */
-    
 }
 
 .delete-button:hover {

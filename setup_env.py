@@ -1,3 +1,11 @@
+# --------------SETTINGS--------------
+
+ADMIN_USERS = [
+    {"username": "admin", "password": "admin"},
+    {"username": "ajxd2", "password": "test"},
+]
+
+
 # --------------LIB--------------
 import os
 
@@ -12,7 +20,7 @@ except ImportError:
 print("LIB CHECK DONE!")
 
 # --------------DB--------------
-from app import db, User, app
+from app import db, User, app, create_user
 
 print("CREATING DB")
 if not os.path.exists("instance"):
@@ -23,8 +31,8 @@ with app.app_context():
     db.create_all()
 
 # --------------ADMIN USER SETUP--------------
-print("Setting up admin user. (username=admin, password=admin)")
+print("Setting up admin accounts.")
 with app.app_context():
-    admin = User(username="admin", password="admin")
-    db.session.add(admin)
-    db.session.commit()
+    for index, user in enumerate(ADMIN_USERS):
+        print(f"Creating user: `{user['username']}` ({index+1}/{len(ADMIN_USERS)})")
+        create_user(user["username"], user["password"])
