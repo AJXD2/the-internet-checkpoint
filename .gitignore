@@ -3,3 +3,5 @@ dev*
 prod*
 *__pycache__
 .env
+flask_session
+instance

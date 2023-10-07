@@ -1,3 +1,4 @@
+from sqlalchemy import false
 from sqlalchemy.exc import IntegrityError
 from app import db, User, Message, app
 import fire
@@ -29,6 +30,32 @@ class UserObj(object):
                 "Cannot create user. If you would like to force make a user use the --force"
             )
 
+    def purge(self):
+        ans = input("Are you sure? (y/n)>")
+
+        if ans == "y":
+            ans = True
+        else:
+            ans = False
+
+        if ans:
+            with app.app_context():
+                users = User.query.all()
+                for i in users:
+                    db.session.delete(i)
+                    db.session.commit()
+
+        print("i suggest you rerun `setup_env.py`.")
+
+
+class MessageObj(object):
+    def clear(self):
+        with app.app_context():
+            messages = Message.query.all()
+            for i in messages:
+                db.session.delete(i)
+                db.session.commit()
+
 
 if __name__ == "__main__":
-    fire.Fire({"user": UserObj})
+    fire.Fire({"user": UserObj, "message": MessageObj})

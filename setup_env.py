@@ -10,13 +10,7 @@ ADMIN_USERS = [
 import os
 
 print("CHECKING LIBRARIES")
-try:
-    import flask, flask_sqlalchemy
-except ImportError:
-    print(
-        "CANNOT FIND LIBRARIES. INSTALLING NOW USING `current enviroment (too lazy to add this)` PACKAGE MANAGER"
-    )
-    os.system("pip install -r requirements.txt")
+os.system("pip install -r requirements.txt")
 print("LIB CHECK DONE!")
 
 # --------------DB--------------

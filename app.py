@@ -14,6 +14,7 @@ import os
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql import func
 import bcrypt
+from flask_session import Session
 
 SALT = bcrypt.gensalt(rounds=12)
 
@@ -29,9 +30,11 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
     basedir, "instance", "dev.db"
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-
+app.config["SESSION_TYPE"] = "filesystem"
+app.config["SESSION_FILE_DIR"] = os.path.join(basedir, "instance", "sessions")
+app.config["SESSION_PERMANENT"] = False
 db = SQLAlchemy(app)
+Session(app)
 
 
 class User(db.Model):
@@ -97,6 +100,13 @@ def index():
         messages=messages,
         trustedusers=trustedusers,
     )
+
+
+@app.route("/profile")
+def profile():
+    if "username" in session:
+        return f'Logged in as {session["username"]}'
+    return "You are not logged in"
 
 
 @app.route("/login", methods=["POST", "GET"])
